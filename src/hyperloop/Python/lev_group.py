@@ -1,5 +1,7 @@
 from openmdao.api import Group, Problem, IndepVarComp
+
 from src.hyperloop.Python.breakpointlev import Drag, Mass
+
 
 class LevGroup(Group):
     """Group containing the breakpointlev.py classes Drag and Mass"""
@@ -11,12 +13,11 @@ class LevGroup(Group):
         self.add('Drag', Drag())
         self.add('Mass', Mass())
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     top = Problem()
 
     root = top.root = Group()
-
 
     # Define Parameters
     params = (
