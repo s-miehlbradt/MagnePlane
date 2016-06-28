@@ -1,9 +1,9 @@
+import pytest
+from hyperloop.Python import lev_group
 from math import pi
 
 import numpy as np
 from openmdao.api import Group, Problem
-
-from src.hyperloop.Python import lev_group
 
 
 def create_problem(GroupName):
@@ -81,6 +81,7 @@ class TestLev(object):
     """
 
     def test_case1_vs_inductrack(self):
+
         LevGroup = lev_group.LevGroup()
 
         prob = create_problem(LevGroup)
@@ -109,8 +110,8 @@ class TestLev(object):
         prob['comp.Drag.Nt'] = .005
         prob['comp.Drag.delta_c'] = .0005334
         prob['comp.Drag.strip_c'] = .0105
-        prob['comp.Drag.rc'] = 1.713 * 10 ** -8
-        prob['comp.Drag.mu0'] = 4. * pi * 10 ** -7
+        prob['comp.Drag.rc'] = 1.713 * 10** -8
+        prob['comp.Drag.mu0'] = 4. * pi * 10** -7
 
         # Pod/Track Relations
         prob['comp.Drag.y'] = .01
