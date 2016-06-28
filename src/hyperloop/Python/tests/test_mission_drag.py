@@ -10,11 +10,13 @@ def create_problem(component):
     prob.root.add('comp', component)
     return prob
 
-
 class TestMissionDrag(object):
+
+
     def test_case1_vs_npss(self):
 
-        component = mission_drag.MissionDrag()
+
+        component  =  mission_drag.MissionDrag()
 
         prob = create_problem(component)
 
@@ -30,4 +32,5 @@ class TestMissionDrag(object):
 
         prob.run()
 
-        assert np.isclose(prob['comp.D'], 930.743575, rtol=0.01)
+        assert np.isclose(prob['comp.D'], 930.743575, rtol = 0.01)
+

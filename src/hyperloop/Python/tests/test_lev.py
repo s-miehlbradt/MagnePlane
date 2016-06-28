@@ -12,7 +12,6 @@ def create_problem(GroupName):
     prob.root.add('comp', GroupName)
     return prob
 
-
 class TestLev(object):
     """
 
@@ -110,8 +109,8 @@ class TestLev(object):
         prob['comp.Drag.Nt'] = .005
         prob['comp.Drag.delta_c'] = .0005334
         prob['comp.Drag.strip_c'] = .0105
-        prob['comp.Drag.rc'] = 1.713 * 10** -8
-        prob['comp.Drag.mu0'] = 4. * pi * 10** -7
+        prob['comp.Drag.rc'] = 1.713*10**-8
+        prob['comp.Drag.mu0'] = 4.*pi*10**-7
 
         # Pod/Track Relations
         prob['comp.Drag.y'] = .01
@@ -124,6 +123,6 @@ class TestLev(object):
 
         # Test Values
         assert np.isclose(prob['comp.Drag.LDratio'], 0.21618, rtol=.01)
-        assert np.isclose(prob['comp.Drag.R'], 0.000707, rtol=.01)
-        assert np.isclose(prob['comp.Drag.L'], 5.7619e-8, rtol=.01)
-        assert np.isclose(prob['comp.Drag.B0'], 0.81281, rtol=.01)
+        assert np.isclose(prob['comp.Drag.R'], 0.000707, rtol = .01)
+        assert np.isclose(prob['comp.Drag.L'], 5.7619e-8, rtol = .01)
+        assert np.isclose(prob['comp.Drag.B0'], 0.81281, rtol = .01)
