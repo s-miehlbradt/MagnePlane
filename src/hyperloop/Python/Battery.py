@@ -8,7 +8,6 @@ import numpy as np
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
-
 class Battery(Component):
     # TODO rematch battery performance data to 18650 or similar Li-Ion battery instead of
     # outdated Ni-Mh battery
@@ -64,53 +63,20 @@ class Battery(Component):
 
         super(Battery, self).__init__()
 
-        self.add_param('desTime',
-                       val=1.0,
-                       desc='time until design power point',
-                       units='h')
-        self.add_param('timeOfFlight',
-                       val=2.0,
-                       desc='total mission time',
-                       units='h')
+        self.add_param('desTime', val=1.0, desc='time until design power point', units='h')
+        self.add_param('timeOfFlight', val=2.0, desc='total mission time', units='h')
         self.add_param('desPower', val=7, desc='design power', units='W')
         self.add_param('desCurrent', val=1, desc='design current', units='A')
-        self.add_param('q_l',
-                       val=0.1,
-                       desc='discharge limit',
-                       units='unitless')
-        self.add_param('E_full',
-                       val=1.4,
-                       desc='fully charged voltage',
-                       units='V')
-        self.add_param('E_nom',
-                       val=1.2,
-                       desc='voltage at  end of nominal zone',
-                       units='V')
-        self.add_param('E_exp',
-                       val=1.27,
-                       desc='voltage at end of exponential zone',
-                       units='V')
-        self.add_param('Q_N',
-                       val=6.8,
-                       desc='Single cell capacity',
-                       units='A*h')
-        self.add_param('t_exp',
-                       val=1.0,
-                       desc='time to reach exponential zone',
-                       units='h')
-        self.add_param('t_nom',
-                       val=4.3,
-                       desc='time to reach nominal zone',
-                       units='h')
-        self.add_param('R',
-                       val=0.0046,
-                       desc='battery resistance',
-                       units='Ohms')
+        self.add_param('q_l', val=0.1, desc='discharge limit', units='unitless')
+        self.add_param('E_full', val=1.4, desc='fully charged voltage', units='V')
+        self.add_param('E_nom', val=1.2, desc='voltage at  end of nominal zone', units='V')
+        self.add_param('E_exp', val=1.27, desc='voltage at end of exponential zone', units='V')
+        self.add_param('Q_N', val=6.8, desc='Single cell capacity', units='A*h')
+        self.add_param('t_exp', val=1.0, desc='time to reach exponential zone', units='h')
+        self.add_param('t_nom', val=4.3, desc='time to reach nominal zone', units='h')
+        self.add_param('R', val=0.0046, desc='battery resistance', units='Ohms')
 
-        self.add_output('N_cells',
-                        val=1,
-                        desc='total number of battery cells',
-                        units='unitless')
+        self.add_output('N_cells', val=1, desc='total number of battery cells', units='unitless')
 
     def solve_nonlinear(self, params, unknowns, resids):
         self._check_rep(params, unknowns, resids)
@@ -128,19 +94,17 @@ class Battery(Component):
         desPower = params['desPower']
         desTime = params['desTime']
         timeOfFlight = params['timeOfFlight']
-
-        capDischarge = self._calculate_total_discharge(timeOfFlight,
-                                                       desCurrent)
+        
+        capDischarge = self._calculate_total_discharge(timeOfFlight, desCurrent)
         # print('capDischarge ' + str(capDischarge))
         N_parallel = capDischarge / (Q_N * (1 - q_l))
         # print('N_paralell ' + str(N_parallel))
         singleBatCurrent = desCurrent / N_parallel
         # print('singleBatCurrent ' + str(singleBatCurrent))
-        singleBatDischarge = self._calculate_total_discharge(
-            desTime, desCurrent) / N_parallel
+        singleBatDischarge = self._calculate_total_discharge(desTime, desCurrent) / N_parallel
 
         # calculate general battery performance curve paramaters
-
+        
         # voltage drop over exponential zone
         # A = E_full - E_exp
         # print('A ' + str(A))
@@ -148,7 +112,7 @@ class Battery(Component):
 
         # discharge of single cell from full to end of exponential zone
         Q_exp = self._calculate_total_discharge(t_exp, desCurrent) / N_parallel
-
+        
         # time constant of the exponential zone
         # B = 3 / Q_exp
         # print('B ' + str(B))
@@ -161,13 +125,15 @@ class Battery(Component):
         # polarization voltage
         # K = (E_full - E_nom + A * (np.exp(-B * Q_nom) - 1)) * (Q_N - Q_nom)
         # print('K ' + str(K))
-        K = 0.01875
+        K=0.01875
+
 
         # no load constant voltage of battery
         # K = polarization voltage, R = resistance,
         # E_0 = E_full + K + R * singleBatCurrent - A
         # print('E_0 ' + str(E_0))
         E_0 = 1.2848
+
 
         # general voltage performance curve
         # print
@@ -180,8 +146,7 @@ class Battery(Component):
         # print(A * np.exp(-B * singleBatDischarge))
         # print(R * singleBatCurrent)
         # print
-        V_batt = E_0 - K * (Q_N / (Q_N - singleBatDischarge)) + A * np.exp(
-            -B * singleBatDischarge) - R * singleBatCurrent
+        V_batt = E_0 - K * (Q_N / (Q_N - singleBatDischarge)) + A * np.exp(-B * singleBatDischarge) - R * singleBatCurrent
 
         # single battery power at minimum voltage point
         P_bat = V_batt * singleBatCurrent
@@ -217,6 +182,7 @@ class Battery(Component):
         assert unknowns['N_cells'] > 0
 
 
+
 if __name__ == '__main__':
     # set up problem
     root = Group()
@@ -228,4 +194,5 @@ if __name__ == '__main__':
 
     # print following properties
 
-    print('Ncells(cells) : %f' % p['comp.N_cells'])
+    print ('Ncells(cells) : %f' % p['comp.N_cells'])
+
