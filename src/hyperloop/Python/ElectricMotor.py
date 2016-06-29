@@ -96,10 +96,6 @@ class ElectricMotor(Component):
                        val=0.0,
                        desc='Resistance of Stator',
                        units='ohm')
-        self.add_param('Inductance',
-                       val=0.0,
-                       desc='Motor inductance',
-                       units='H')
         self.add_param('Speed',
                        val=1900.0,
                        desc='Output shaft mechanical speed',
@@ -171,6 +167,10 @@ class ElectricMotor(Component):
                         val=0.0,
                         desc='Phase current',
                         units='A')
+        self.add_param('Inductance',
+                       val=1.0,
+                       desc='Motor inductance',
+                       units='H')
         self.add_output('phaseVoltage',
                         val=500.0,
                         desc='AC voltage across motor',
@@ -211,6 +211,7 @@ class ElectricMotor(Component):
         PolePairs = params['PolePairs']
         Inductance = params['Inductance']
         kappa = params['kappa']
+
         LDratio = params['LDratio']
         R0 = params['R0']
         I0 = params['I0']
@@ -292,14 +293,19 @@ class ElectricMotor(Component):
     def Phase_calc(self, Kv, Speed, PolePairs, Torque, Resistance, Inductance,
                    Frequency):
         Kt = .73756214837 / Kv
-        Freq = Speed * PolePairs / (2 * numpy.pi)
+        Frequency = Speed * PolePairs / (2 * numpy.pi)
         Current = Torque / Kt
         resistorVoltage = Current * Resistance
+        print('freq ' + str(Frequency))
+        print('inductacnce ' + str(Inductance))
         inductorImpedance = Frequency * Inductance
         inductorVoltage = Current * inductorImpedance
         speedVoltage = Kv * Speed
         realVoltage = speedVoltage + resistorVoltage
-        Phase = numpy.arctan2(inductorVoltage, realVoltage)
+        Phase = numpy.arctan(inductorVoltage / realVoltage)
+        print("phase " + str(Phase))
+        print('inductorvoltage ' + str(inductorVoltage))
+        print('realvoltage ' + str(realVoltage))
         return Phase
 
 
@@ -307,7 +313,7 @@ if __name__ == '__main__':
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', ElectricMotor())
-    prob.setup()
+    prob.setup(check=False)
     prob.run()
 
     # Printing various input parameters to check with C++ model/inputs
