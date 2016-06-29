@@ -1,10 +1,12 @@
+"""
+Group containing the breakpointlev.py classes Drag and Mass
+"""
+
 from openmdao.api import Group, Problem, IndepVarComp
 from hyperloop.Python.breakpointlev import Drag, Mass
 
 
 class LevGroup(Group):
-    """Group containing the breakpointlev.py classes Drag and Mass"""
-
     def __init__(self):
         super(LevGroup, self).__init__()
 
